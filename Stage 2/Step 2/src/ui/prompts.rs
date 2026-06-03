@@ -1,41 +1,85 @@
-use crate::{models::{Epic, Story, Status}, io_utils::get_user_input};
+use crate::{
+    io_utils::get_user_input,
+    models::{Epic, Status, Story},
+};
 
 pub struct Prompts {
     pub create_epic: Box<dyn Fn() -> Epic>,
     pub create_story: Box<dyn Fn() -> Story>,
     pub delete_epic: Box<dyn Fn() -> bool>,
     pub delete_story: Box<dyn Fn() -> bool>,
-    pub update_status: Box<dyn Fn() -> Option<Status>>
+    pub update_status: Box<dyn Fn() -> Option<Status>>,
 }
 
 impl Prompts {
     pub fn new() -> Self {
-        Self { 
+        Self {
             create_epic: Box::new(create_epic_prompt),
             create_story: Box::new(create_story_prompt),
             delete_epic: Box::new(delete_epic_prompt),
             delete_story: Box::new(delete_story_prompt),
-            update_status: Box::new(update_status_prompt)
+            update_status: Box::new(update_status_prompt),
         }
     }
 }
 
 fn create_epic_prompt() -> Epic {
-    todo!();
+    println!("----------------------------");
+    println!("Epic Name: ");
+    let epic_name = get_user_input();
+    println!("Epic Description: ");
+    let epic_desc = get_user_input();
+    let epic = Epic::new(epic_name.trim().to_string(), epic_desc.trim().to_string());
+    epic
 }
 
 fn create_story_prompt() -> Story {
-    todo!();
+    println!("----------------------------");
+    println!("Story Name: ");
+    let story_name = get_user_input();
+    println!("Story Description: ");
+    let story_desc = get_user_input();
+
+    let story = Story::new(story_name.trim().to_string(), story_desc.trim().to_string());
+    story
 }
 
 fn delete_epic_prompt() -> bool {
-    todo!();
+    println!("----------------------------");
+    println!("Are you sure you want to delete this epic? All stories in this epic will also be deleted [Y/n]: ");
+    let mut input = get_user_input();
+    input = input.to_lowercase();
+    match input.as_str() {
+        "y" => true,
+        _ => false,
+    }
 }
 
 fn delete_story_prompt() -> bool {
-    todo!();
+    println!("----------------------------");
+    println!("Are you sure you want to delete this story?: ");
+    let mut input = get_user_input();
+    input = input.to_lowercase();
+    match input.as_str() {
+        "y" => true,
+        _ => false,
+    }
 }
 
 fn update_status_prompt() -> Option<Status> {
-    todo!();
+    println!("----------------------------");
+    println!("New Status (1 - OPEN, 2 - IN-PROGRESS, 3 - RESOLVED, 4 - CLOSED): ");
+    let input = get_user_input();
+
+    if let Ok(parse) = input.parse::<u32>() {
+        match parse {
+            1 => Some(Status::Open),
+            2 => Some(Status::InProgress),
+            3 => Some(Status::Resolved),
+            4 => Some(Status::Closed),
+            _ => None,
+        }
+    } else {
+        None
+    }
 }
